@@ -373,6 +373,42 @@ class Map:
         # Right Vertical Line
         pygame.draw.line(self.gameDisplay, color, (self.width - margin,
                                                    margin), (self.width - margin, self.height - margin))
+    def remove_alpha(self, pixel):
+        """removes last element in 4 element color tuple"""
+        temp_list = list(pixel)
+        temp_list.pop()
+        RGB = tuple(temp_list)
+        return RGB
+
+    def check_movement(self,direction):
+        """checks if player is able to move in a certain direction if claiming is False"""
+        if(direction=="right"):
+            if(map.remove_alpha(map.gameDisplay.get_at((map.player.x + 10, map.player.y))) == consts.BORDER_COLOR):
+                return True
+            else:
+                return False
+        if(direction=="left"):
+            if (map.remove_alpha(map.gameDisplay.get_at((map.player.x - 11, map.player.y))) == consts.BORDER_COLOR):
+                return True
+            else:
+                if((map.player.x,map.player.y)==(30,400) or (map.player.x,map.player.y)==(30,20)):
+                    return True
+                else:
+                    return False
+        if(direction =="up"):
+            if (map.remove_alpha(map.gameDisplay.get_at((map.player.x, map.player.y-11))) == consts.BORDER_COLOR):
+                return True
+            else:
+                if ((map.player.x, map.player.y) == (20, 30) or (map.player.x,map.player.y)==(400,30)):
+                    return True
+                else:
+                    return False
+                return False
+        if(direction =="down"):
+            if (map.remove_alpha(map.gameDisplay.get_at((map.player.x, map.player.y + 10))) == consts.BORDER_COLOR):
+                return True
+            else:
+                return False
 
 
 def run():
@@ -403,16 +439,29 @@ def run():
     
                 # Moving manually
                 if event.key == pygame.K_RIGHT:
-                    map.player.move(direction="right")
+                    #movements are restricted to moving along border if player is not claiming
+                    if (map.player.claiming == False and map.check_movement("right")):
+                        map.player.move(direction="right")
+                    elif (map.player.claiming):
+                        map.player.move(direction="right")
     
                 if event.key == pygame.K_LEFT:
-                    map.player.move(direction="left")
+                    if (map.player.claiming == False and map.check_movement("left")):
+                        map.player.move(direction="left")
+                    elif (map.player.claiming):
+                        map.player.move(direction="left")
     
                 if event.key == pygame.K_UP:
-                    map.player.move(direction="up")
+                    if (map.player.claiming == False and map.check_movement("up")):
+                        map.player.move(direction="up")
+                    elif (map.player.claiming):
+                        map.player.move(direction="up")
     
                 if event.key == pygame.K_DOWN:
-                    map.player.move(direction="down")
+                    if (map.player.claiming == False and map.check_movement("down")):
+                        map.player.move(direction="down")
+                    elif (map.player.claiming):
+                        map.player.move(direction="down")
     
         # If the game is not paused then render the graphics
         if not PAUSE:
